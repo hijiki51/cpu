@@ -13,25 +13,52 @@ import mill.bsp._
 // to properly generate and handle test directories and output files.
 // See: https://github.com/com-lihaoyi/mill/issues/3840
 
-object cpu extends SbtModule { m =>
-  override def millSourcePath = super.millSourcePath / os.up
-  override def scalaVersion = "2.13.16"
-  override def scalacOptions = Seq(
+object `package` extends RootModule with ScalaModule { m =>
+  override def millSourcePath = super.millSourcePath / "src"
+  def projectScalaVersion = "2.13.16"
+  def projectScalacOptions = Seq(
     "-language:reflectiveCalls",
     "-deprecation",
     "-feature",
     "-Xcheckinit",
-    "-Ymacro-annotations",
+    "-Ymacro-annotations"
   )
+  def projectScalacPluginIvyDeps = Agg(
+    ivy"org.chipsalliance:::chisel-plugin:6.7.0"
+  )
+  override def scalaVersion = projectScalaVersion
+  override def scalacOptions = projectScalacOptions
   override def ivyDeps = Agg(
-    ivy"org.chipsalliance::chisel:6.7.0",
+    ivy"org.chipsalliance::chisel:6.7.0"
   )
-  override def scalacPluginIvyDeps = Agg(
-    ivy"org.chipsalliance:::chisel-plugin:6.7.0",
-  )
-  object test extends SbtTests with TestModule.ScalaTest {
-    override def ivyDeps = m.ivyDeps() ++ Agg(
-      ivy"org.scalatest::scalatest::3.2.19"
-    )
+  override def scalacPluginIvyDeps = projectScalacPluginIvyDeps
+
+  object common extends ScalaModule {
+    override def moduleDeps = Seq(m)
+    override def scalaVersion = projectScalaVersion
+    override def scalacOptions = projectScalacOptions
+    override def scalacPluginIvyDeps = projectScalacPluginIvyDeps
+  }
+
+  object interfaces extends ScalaModule {
+    override def moduleDeps = Seq(m, common)
+    override def scalaVersion = projectScalaVersion
+    override def scalacOptions = projectScalacOptions
+    override def scalacPluginIvyDeps = projectScalacPluginIvyDeps
+  }
+
+  object cpu extends ScalaModule { 
+    override def moduleDeps = Seq(m, common, interfaces)
+    override def scalaVersion = projectScalaVersion
+    override def scalacOptions = projectScalacOptions
+    override def scalacPluginIvyDeps = projectScalacPluginIvyDeps
+
+    object test extends ScalaTests {
+      override def ivyDeps = super.ivyDeps() ++ Agg(
+        ivy"org.scalatest::scalatest::3.2.19"
+      )
+
+      def testFramework = "org.scalatest.tools.Framework"
+    }
   }
 }

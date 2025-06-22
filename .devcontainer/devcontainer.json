@@ -1,0 +1,11 @@
+{
+  "name": "Chisel DevContainer",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["scalameta.metals", "ms-azuretools.vscode-docker"]
+    }
+  }
+}

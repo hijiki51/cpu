@@ -27,4 +27,9 @@ class Core extends Module {
   val inst = io.imem.inst
 
   io.exit := (inst === END_OF_PROGRAM)
+  printf(p"inst: 0x${Hexadecimal(inst)}\n")
+  printf(p"pc_reg: 0x${Hexadecimal(pc_reg)}\n")
+  printf(p"exit: ${io.exit}\n")
+  printf(p"--------------------------------\n")
+
 }
