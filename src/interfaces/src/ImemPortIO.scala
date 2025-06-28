@@ -10,3 +10,10 @@ class ImemPortIO extends Bundle {
   // メモリから読み込んだ命令用出力ポート
   val inst = Output(UInt(WORD_LENGTH.W))
 }
+
+class DmemPortIO extends Bundle {
+  // メモリアドレス用入力ポート
+  val addr = Input(UInt(WORD_LENGTH.W))
+  // メモリから読み込んだデータ用出力ポート
+  val rdata = Output(UInt(WORD_LENGTH.W))
+}

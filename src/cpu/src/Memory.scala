@@ -4,7 +4,7 @@ import chisel3._
 import chisel3.util._
 import chisel3.util.experimental.loadMemoryFromFileInline
 import common.Consts._
-import interfaces.ImemPortIO
+import interfaces._
 import scala.util.Using
 
 class Memory extends Module {
@@ -45,11 +45,12 @@ class Memory extends Module {
   }
   val io = IO(new Bundle {
     val imem = new ImemPortIO()
+    val dmem = new DmemPortIO()
   })
 
   val mem = Mem(MEMORY_DEPTH, UInt(8.W))
 
-  load(mem, "/mem.hex")
+  load(mem, "/lw.hex")
 
   io.imem.inst := Cat(
     mem(io.imem.addr + 7.U),
@@ -60,5 +61,16 @@ class Memory extends Module {
     mem(io.imem.addr + 2.U),
     mem(io.imem.addr + 1.U),
     mem(io.imem.addr)
+  )
+
+  io.dmem.rdata := Cat(
+    mem(io.dmem.addr + 7.U),
+    mem(io.dmem.addr + 6.U),
+    mem(io.dmem.addr + 5.U),
+    mem(io.dmem.addr + 4.U),
+    mem(io.dmem.addr + 3.U),
+    mem(io.dmem.addr + 2.U),
+    mem(io.dmem.addr + 1.U),
+    mem(io.dmem.addr)
   )
 }
